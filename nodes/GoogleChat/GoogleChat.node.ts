@@ -282,8 +282,14 @@ export class GoogleChat implements INodeType {
 
 						const parentName = this.getNodeParameter('parentName', i) as string;
 
-						const thread = this.getNodeParameter('threadKey', i) as string;
-						qs.threadKey = `${parentName}/threads/${thread}`;
+						const threadKey = this.getNodeParameter('threadKey', i) as string;
+						if (threadKey && threadKey !== '') {
+							qs.threadKey = threadKey;
+						}
+						const requestId = this.getNodeParameter('requestId', i) as string;
+						if (requestId && requestId !== '') {
+							qs.requestId = requestId;
+						}
 
 						let message: IMessage = {};
 						const jsonParameterMessage = this.getNodeParameter('jsonParameterMessage', i) as boolean;

@@ -80,7 +80,24 @@ export const messageFields = [
 			},
 		},
 		default: '',
-		description: 'Thread identifier which groups messages into a single thread. Has no effect if thread field, corresponding to an existing thread, is set in message.',
+		description: 'Thread identifier which groups messages into a single thread. Has no effect if thread field, corresponding to an existing thread, is set in message. Example: spaces/AAAAMpdlehY/threads/MZ8fXhZXGkk',
+	},
+	{
+		displayName: 'Request ID',
+		name: 'requestId',
+		type: 'string',
+		displayOptions: {
+			show: {
+				resource: [
+					'message',
+				],
+				operation: [
+					'create',
+				],
+			},
+		},
+		default: '',
+		description: ' A unique request ID for this message. If a message has already been created in the space with this request ID, the subsequent request will return the existing message and no new message will be created.',
 	},
 
 	{
