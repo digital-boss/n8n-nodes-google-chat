@@ -56,7 +56,7 @@ export const memberFields = [
 	},
 	{
 		displayName: 'Membership Name',
-		name: 'memberName',
+		name: 'membershipName',
 		type: 'string',
 		required: true,
 		displayOptions: {

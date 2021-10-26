@@ -188,12 +188,12 @@ export class GoogleChat implements INodeType {
 						// https://developers.google.com/chat/reference/rest/v1/spaces.members/get
 
 						const spaceName = this.getNodeParameter('spaceName', i) as string;
-						const memberName = this.getNodeParameter('memberName', i) as string;
+						const membershipName = this.getNodeParameter('membershipName', i) as string;
 
 						responseData = await googleApiRequest.call(
 							this,
 							'GET',
-							`/v1/spaces/${spaceName}/members/${memberName}`,
+							`/v1/spaces/${spaceName}/members/${membershipName}`,
 						);
 
 					} else if (operation === 'getAll') {
