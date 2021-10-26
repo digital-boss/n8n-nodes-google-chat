@@ -25,6 +25,11 @@ export const spaceOperations = [
 				value: 'getAll',
 				description: 'Lists spaces the caller is a member of.',
 			},
+			{
+				name: 'Webhook',
+				value: 'webhook',
+				description: 'Creates messages through a webhook (no chat bot is needed).',
+			},
 		],
 		default: 'get',
 		description: 'The operation to perform.',
@@ -118,9 +123,129 @@ export const  spaceFields = [
 	/* -------------------------------------------------------------------------- */
 	/*                                 space:webhooks                              */
 	/* -------------------------------------------------------------------------- */
-	// todo
+	{
+		displayName: 'See <a href="https://developers.google.com/chat/how-tos/webhooks" target="_blank">Google Chat guide</a> to webhooks',
+		name: 'jsonNotice',
+		type: 'notice',
+		displayOptions: {
+			show: {
+				resource: [
+					'space',
+				],
+				operation: [
+					'webhook',
+				],
+			},
+		},
+		default: '',
+	},
+	{
+		displayName: 'Incoming Webhook URL',
+		name: 'webhookUrl',
+		type: 'string',
+		required: true,
+		displayOptions: {
+			show: {
+				resource: [
+					'space',
+				],
+				operation: [
+					'webhook',
+				],
+			},
+		},
+		default: '',
+		description: 'URL for the incoming webhook.',
+	},
 
+	{
+		displayName: 'Json Parameter Message',
+		name: 'jsonParameterMessage',
+		type: 'boolean',
+		displayOptions: {
+			show: {
+				resource: [
+					'space',
+				],
+				operation: [
+					'webhook',
+				],
+			},
+		},
+		default: false,
+		description: 'Pass message object as JSON.',
+	},
+	{
+		displayName: 'Message',
+		name: 'messageUi',
+		type: 'collection',
+		required: true,
+		placeholder: 'Add Options',
+		displayOptions: {
+			show: {
+				resource: [
+					'space',
+				],
+				operation: [
+					'webhook',
+				],
+				jsonParameterMessage: [
+					false,
+				],
+			},
+		},
+		default: {'text': ''},
+		description: '',
+		options: [
+			{
+				displayName: 'Text',
+				name: 'text',
+				type: 'string',
+				default: '',
+				description: 'The message text.',
+			},
+		],
+	},
+	{
+		displayName: 'See <a href="https://developers.google.com/chat/reference/rest/v1/spaces.messages#Message" target="_blank">Google Chat guide</a> to creating messages',
+		name: 'jsonNotice',
+		type: 'notice',
+		displayOptions: {
+			show: {
+				resource: [
+					'space',
+				],
+				operation: [
+					'webhook',
+				],
+				jsonParameterMessage: [
+					true,
+				],
+			},
+		},
+		default: '',
+	},
+	{
+		displayName: 'Message (JSON)',
+		name: 'messageJson',
+		type: 'json',
+		required: true,
+		displayOptions: {
+			show: {
+
+				resource: [
+					'space',
+				],
+				operation: [
+					'webhook',
+				],
+				jsonParameterMessage: [
+					true,
+				],
+			},
+		},
+		default: '',
+		description: 'Message input as JSON.',
+	},
 
 ] as INodeProperties[];
-
-

@@ -11,7 +11,6 @@ import {
 } from 'n8n-workflow';
 
 import {
-	ICard,
 	IMessage,
 	IMessageUi,
 } from './MessageInterface';
@@ -30,7 +29,8 @@ import {
 } from './descriptions';
 
 import {
-	googleApiRequest, googleApiRequestAllItems,
+	googleApiRequest,
+	googleApiRequestAllItems,
 	validateJSON,
 } from './GenericFunctions';
 
@@ -45,14 +45,14 @@ export class GoogleChat implements INodeType {
 		description: 'Consume Google Chat API',
 		defaults: {
 			name: 'Google Chat',
-			color: '#3E87E4',
+			color: '#0aa55c',
 		},
 		inputs: ['main'],
 		outputs: ['main'],
 		credentials: [
 			{
 				name: 'googleApi',
-				required: true,
+				required: false, // not required, webhooks do not need credentials
 			},
 		],
 		properties: [
@@ -160,8 +160,7 @@ export class GoogleChat implements INodeType {
 								undefined,
 								qs,
 							);
-						}
-						else {
+						} else {
 							const additionalFields = this.getNodeParameter('additionalFields', i) as IDataObject;
 							qs.pageSize = additionalFields.pageSize as number >>> 0; // convert to an unsigned 32-bit integer
 							qs.pageToken = additionalFields.pageToken;
@@ -177,6 +176,45 @@ export class GoogleChat implements INodeType {
 						}
 
 					}
+				}	if (operation === 'webhook') {
+
+					// ----------------------------------------
+					//             space: webhook
+					// ----------------------------------------
+
+					// https://developers.google.com/chat/how-tos/webhooks
+
+					const uri = this.getNodeParameter('webhookUrl', i) as string;
+
+					let message: IMessage = {};
+					const jsonParameterMessage = this.getNodeParameter('jsonParameterMessage', i) as boolean;
+					if (jsonParameterMessage) {
+						const jsonStr = this.getNodeParameter('messageJson', i) as string;
+						if (validateJSON(jsonStr) !== undefined) {
+							message = JSON.parse(jsonStr) as IMessage;
+						} else {
+							throw new NodeOperationError(this.getNode(), 'Message (JSON) must be a valid json');
+						}
+					} else {
+						const messageUi = this.getNodeParameter('messageUi', i) as IMessageUi;
+						if (messageUi.text && messageUi.text !== '') {
+							message.text = messageUi.text;
+						} else {
+							throw new NodeOperationError(this.getNode(), 'Message Text must be provided.');
+						}
+					}
+					const body: IDataObject = {};
+					Object.assign(body, message);
+
+					responseData = await googleApiRequest.call(
+						this,
+						'POST',
+						`/v1/spaces`,
+						body,
+						{},
+						uri,
+						true,
+					);
 
 				} else if (resource === 'member') {
 					if (operation === 'get') {
@@ -249,7 +287,7 @@ export class GoogleChat implements INodeType {
 						qs.threadKey = `spaces/${spaceName}/threads/${thread}`;
 
 						let message: IMessage = {};
-						const jsonParameterMessage = this.getNodeParameter('jsonParameterMessage', i) as string;
+						const jsonParameterMessage = this.getNodeParameter('jsonParameterMessage', i) as boolean;
 						if (jsonParameterMessage) {
 							const jsonStr = this.getNodeParameter('messageJson', i) as string;
 

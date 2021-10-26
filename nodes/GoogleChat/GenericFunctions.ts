@@ -20,13 +20,7 @@ import * as moment from 'moment-timezone';
 
 import * as jwt from 'jsonwebtoken';
 
-export async function googleApiRequest(this: IExecuteFunctions | IExecuteSingleFunctions | ILoadOptionsFunctions, method: string, resource: string, body: any = {}, qs: IDataObject = {}, uri?: string, headers: IDataObject = {}): Promise<any> { // tslint:disable-line:no-any
-
-	const credentials = await this.getCredentials('googleApi');
-
-	if (credentials === undefined) {
-		throw new NodeOperationError(this.getNode(), 'No credentials got returned!');
-	}
+export async function googleApiRequest(this: IExecuteFunctions | IExecuteSingleFunctions | ILoadOptionsFunctions, method: string, resource: string, body: any = {}, qs: IDataObject = {}, uri?: string, noCredentials = false): Promise<any> { // tslint:disable-line:no-any
 
 	const options: OptionsWithUri = {
 		headers: {
@@ -39,25 +33,31 @@ export async function googleApiRequest(this: IExecuteFunctions | IExecuteSingleF
 		json: true,
 	};
 
-	if (Object.keys(headers).length !== 0) {
-		options.headers = Object.assign({}, options.headers, headers);
-	}
 	if (Object.keys(body).length === 0) {
 		delete options.body;
 	}
 
 	try {
-		const { access_token } = await getAccessToken.call(this, credentials as ICredentialDataDecryptedObject);
+		if (noCredentials) {
+			//@ts-ignore
+			return await this.helpers.request(options);
+		} else{
+			const credentials = await this.getCredentials('googleApi');
 
-		options.headers!.Authorization = `Bearer ${access_token}`;
-		//@ts-ignore
-		return await this.helpers.request(options);
+			if (credentials === undefined) {
+				throw new NodeOperationError(this.getNode(), 'No credentials got returned!');
+			}
 
+			const { access_token } = await getAccessToken.call(this, credentials as ICredentialDataDecryptedObject);
+			options.headers!.Authorization = `Bearer ${access_token}`;
+
+			//@ts-ignore
+			return await this.helpers.request(options);
+		}
 	} catch (error) {
 		if (error.code === 'ERR_OSSL_PEM_NO_START_LINE') {
 			error.statusCode = '401';
 		}
-
 		throw new NodeApiError(this.getNode(), error);
 	}
 }
