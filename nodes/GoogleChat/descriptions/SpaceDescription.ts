@@ -41,8 +41,8 @@ export const  spaceFields = [
 	/*                                 space:get                              */
 	/* -------------------------------------------------------------------------- */
 	{
-		displayName: 'Space Name',
-		name: 'spaceName',
+		displayName: 'Name',
+		name: 'name',
 		type: 'string',
 		required: true,
 		displayOptions: {
@@ -56,7 +56,7 @@ export const  spaceFields = [
 			},
 		},
 		default: '',
-		description: 'Name of the space.',
+		description: 'Resource name of the space, in the form "spaces/*".',
 	},
 
 	/* -------------------------------------------------------------------------- */
@@ -158,6 +158,23 @@ export const  spaceFields = [
 		description: 'URL for the incoming webhook.',
 	},
 
+	{
+		displayName: 'Thread Key (Full Path)',
+		name: 'threadKey',
+		type: 'string',
+		displayOptions: {
+			show: {
+				resource: [
+					'space',
+				],
+				operation: [
+					'webhook',
+				],
+			},
+		},
+		default: '',
+		description: 'In the format of "spaces/*/threads/*". Thread identifier which groups messages into a single thread. Has no effect if thread field, corresponding to an existing thread, is set in message.',
+	},
 	{
 		displayName: 'Json Parameter Message',
 		name: 'jsonParameterMessage',

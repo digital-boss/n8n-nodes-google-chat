@@ -31,8 +31,8 @@ export const  attachmentFields = [
 	/*                                 attachments:get                              */
 	/* -------------------------------------------------------------------------- */
 	{
-		displayName: 'Space Name',
-		name: 'spaceName',
+		displayName: 'Name',
+		name: 'name',
 		type: 'string',
 		required: true,
 		displayOptions: {
@@ -46,42 +46,7 @@ export const  attachmentFields = [
 			},
 		},
 		default: '',
-		description: 'Name of the space.',
+		description: 'Resource name of the attachment, in the form "spaces/*/messages/*/attachments/*".',
 	},
-	{
-		displayName: 'Message Name',
-		name: 'messageName',
-		type: 'string',
-		required: true,
-		displayOptions: {
-			show: {
-				resource: [
-					'attachment',
-				],
-				operation: [
-					'get',
-				],
-			},
-		},
-		default: '',
-		description: 'Name of the message.',
-	},
-	{
-		displayName: 'Attachment Name',
-		name: 'attachmentName',
-		type: 'string',
-		required: true,
-		displayOptions: {
-			show: {
-				resource: [
-					'attachment',
-				],
-				operation: [
-					'get',
-				],
-			},
-		},
-		default: '',
-		description: 'Name of the attachment.',
-	},
+
 ] as INodeProperties[];

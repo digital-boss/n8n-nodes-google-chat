@@ -37,8 +37,8 @@ export const memberFields = [
 	/*                                 member:get                              */
 	/* -------------------------------------------------------------------------- */
 	{
-		displayName: 'Space Name',
-		name: 'spaceName',
+		displayName: 'Name',
+		name: 'name',
 		type: 'string',
 		required: true,
 		displayOptions: {
@@ -52,33 +52,15 @@ export const memberFields = [
 			},
 		},
 		default: '',
-		description: 'Name of the space.',
-	},
-	{
-		displayName: 'Membership Name',
-		name: 'membershipName',
-		type: 'string',
-		required: true,
-		displayOptions: {
-			show: {
-				resource: [
-					'member',
-				],
-				operation: [
-					'get',
-				],
-			},
-		},
-		default: '',
-		description: 'Name of the membership to be retrieved.',
+		description: 'Resource name of the membership to be retrieved, in the form "spaces/*/members/*".',
 	},
 
 	/* -------------------------------------------------------------------------- */
 	/*                                 members:getAll                              */
 	/* -------------------------------------------------------------------------- */
 	{
-		displayName: 'Space Name',
-		name: 'spaceName',
+		displayName: 'Parent Name',
+		name: 'parentName',
 		type: 'string',
 		required: true,
 		displayOptions: {
@@ -92,7 +74,7 @@ export const memberFields = [
 			},
 		},
 		default: '',
-		description: 'Name of the space for which membership list is to be fetched.',
+		description: 'The resource name of the space for which membership list is to be fetched, in the form "spaces/*".',
 	},
 	{
 		displayName: 'Return All',

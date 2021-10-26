@@ -48,8 +48,8 @@ export const messageFields = [
 	/*                                 message:create                              */
 	/* -------------------------------------------------------------------------- */
 	{
-		displayName: 'Space Name',
-		name: 'spaceName',
+		displayName: 'Parent Name',
+		name: 'parentName',
 		type: 'string',
 		required: true,
 		displayOptions: {
@@ -63,7 +63,7 @@ export const messageFields = [
 			},
 		},
 		default: '',
-		description: 'Name of the space.',
+		description: 'Space resource name, in the form "spaces/*". Example: spaces/AAAAMpdlehY',
 	},
 	{
 		displayName: 'Thread Key',
@@ -223,8 +223,8 @@ export const messageFields = [
 	/*                                 messages:delete                              */
 	/* -------------------------------------------------------------------------- */
 	{
-		displayName: 'Space Name',
-		name: 'spaceName',
+		displayName: 'Name',
+		name: 'name',
 		type: 'string',
 		required: true,
 		displayOptions: {
@@ -238,33 +238,15 @@ export const messageFields = [
 			},
 		},
 		default: '',
-		description: 'Name of the space.',
-	},
-	{
-		displayName: 'Message Name',
-		name: 'messageName',
-		type: 'string',
-		required: true,
-		displayOptions: {
-			show: {
-				resource: [
-					'message',
-				],
-				operation: [
-					'delete',
-				],
-			},
-		},
-		default: '',
-		description: 'Name of the message.',
+		description: 'Resource name of the message to be deleted, in the form "spaces/*/messages/*".',
 	},
 
 	/* -------------------------------------------------------------------------- */
 	/*                                 message:get                              */
 	/* -------------------------------------------------------------------------- */
 	{
-		displayName: 'Space Name',
-		name: 'spaceName',
+		displayName: 'Name',
+		name: 'name',
 		type: 'string',
 		required: true,
 		displayOptions: {
@@ -278,33 +260,15 @@ export const messageFields = [
 			},
 		},
 		default: '',
-		description: 'Name of the space.',
-	},
-	{
-		displayName: 'Message Name',
-		name: 'messageName',
-		type: 'string',
-		required: true,
-		displayOptions: {
-			show: {
-				resource: [
-					'message',
-				],
-				operation: [
-					'get',
-				],
-			},
-		},
-		default: '',
-		description: 'Name of the message.',
+		description: 'Resource name of the message to be deleted, in the form "spaces/*/messages/*".',
 	},
 
 	/* -------------------------------------------------------------------------- */
 	/*                                 message:update                              */
 	/* -------------------------------------------------------------------------- */
 	{
-		displayName: 'Space Name',
-		name: 'spaceName',
+		displayName: 'Name',
+		name: 'name',
 		type: 'string',
 		required: true,
 		displayOptions: {
@@ -318,25 +282,7 @@ export const messageFields = [
 			},
 		},
 		default: '',
-		description: 'Name of the space.',
-	},
-	{
-		displayName: 'Message Name',
-		name: 'messageName',
-		type: 'string',
-		required: true,
-		displayOptions: {
-			show: {
-				resource: [
-					'message',
-				],
-				operation: [
-					'update',
-				],
-			},
-		},
-		default: '',
-		description: 'Name of the message.',
+		description: 'Resource name of the message to be retrieved, in the form "spaces/*/messages/*".',
 	},
 
 	{

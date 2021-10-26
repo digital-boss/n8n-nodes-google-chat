@@ -134,12 +134,12 @@ export class GoogleChat implements INodeType {
 
 						// https://developers.google.com/chat/reference/rest/v1/spaces/get
 
-						const spaceName = this.getNodeParameter('spaceName', i) as string;
+						const name = this.getNodeParameter('name', i) as string;
 
 						responseData = await googleApiRequest.call(
 							this,
 							'GET',
-							`/v1/spaces/${spaceName}`,
+							`/v1/${name}`,
 						);
 
 					} else if (operation === 'getAll') {
@@ -157,8 +157,6 @@ export class GoogleChat implements INodeType {
 								'spaces',
 								'GET',
 								`/v1/spaces`,
-								undefined,
-								qs,
 							);
 						} else {
 							const additionalFields = this.getNodeParameter('additionalFields', i) as IDataObject;
@@ -185,6 +183,8 @@ export class GoogleChat implements INodeType {
 					// https://developers.google.com/chat/how-tos/webhooks
 
 					const uri = this.getNodeParameter('webhookUrl', i) as string;
+					const threadKey = this.getNodeParameter('threadKey', i) as string;
+					qs.threadKey = threadKey;
 
 					let message: IMessage = {};
 					const jsonParameterMessage = this.getNodeParameter('jsonParameterMessage', i) as boolean;
@@ -211,7 +211,7 @@ export class GoogleChat implements INodeType {
 						'POST',
 						`/v1/spaces`,
 						body,
-						{},
+						qs,
 						uri,
 						true,
 					);
@@ -225,13 +225,12 @@ export class GoogleChat implements INodeType {
 
 						// https://developers.google.com/chat/reference/rest/v1/spaces.members/get
 
-						const spaceName = this.getNodeParameter('spaceName', i) as string;
-						const membershipName = this.getNodeParameter('membershipName', i) as string;
+						const name = this.getNodeParameter('name', i) as string;
 
 						responseData = await googleApiRequest.call(
 							this,
 							'GET',
-							`/v1/spaces/${spaceName}/members/${membershipName}`,
+							`/v1/${name}`,
 						);
 
 					} else if (operation === 'getAll') {
@@ -242,7 +241,7 @@ export class GoogleChat implements INodeType {
 
 						// https://developers.google.com/chat/reference/rest/v1/spaces.members/list
 
-						const spaceName = this.getNodeParameter('spaceName', i) as string;
+						const parentName = this.getNodeParameter('parentName', i) as string;
 
 						const returnAll = this.getNodeParameter('returnAll', 0) as IDataObject;
 						if (returnAll) {
@@ -250,7 +249,7 @@ export class GoogleChat implements INodeType {
 								this,
 								'memberships',
 								'GET',
-								`/v1/spaces/${spaceName}/members`,
+								`/v1/${parentName}/members`,
 								undefined,
 								qs,
 							);
@@ -264,7 +263,7 @@ export class GoogleChat implements INodeType {
 							responseData = await googleApiRequest.call(
 								this,
 								'GET',
-								`/v1/spaces/${spaceName}/members`,
+								`/v1/${parentName}/members`,
 								undefined,
 								qs,
 							);
@@ -281,10 +280,10 @@ export class GoogleChat implements INodeType {
 
 						// https://developers.google.com/chat/reference/rest/v1/spaces.messages/create
 
-						const spaceName = this.getNodeParameter('spaceName', i) as string;
+						const parentName = this.getNodeParameter('parentName', i) as string;
 
 						const thread = this.getNodeParameter('threadKey', i) as string;
-						qs.threadKey = `spaces/${spaceName}/threads/${thread}`;
+						qs.threadKey = `${parentName}/threads/${thread}`;
 
 						let message: IMessage = {};
 						const jsonParameterMessage = this.getNodeParameter('jsonParameterMessage', i) as boolean;
@@ -317,7 +316,7 @@ export class GoogleChat implements INodeType {
 						responseData = await googleApiRequest.call(
 							this,
 							'POST',
-							`/v1/spaces/${spaceName}/messages`,
+							`/v1/${parentName}/messages`,
 							body,
 							qs,
 						);
@@ -330,13 +329,12 @@ export class GoogleChat implements INodeType {
 
 						// https://developers.google.com/chat/reference/rest/v1/spaces.messages/delete
 
-						const spaceName = this.getNodeParameter('spaceName', i) as string;
-						const messageName = this.getNodeParameter('messageName', i) as string;
+						const name = this.getNodeParameter('name', i) as string;
 
 						responseData = await googleApiRequest.call(
 							this,
 							'DELETE',
-							`/v1/spaces/${spaceName}/messages/${messageName}`,
+							`/v1/${name}`,
 						);
 
 					} else if (operation === 'get') {
@@ -347,13 +345,12 @@ export class GoogleChat implements INodeType {
 
 						// https://developers.google.com/chat/reference/rest/v1/spaces.messages/get
 
-						const spaceName = this.getNodeParameter('spaceName', i) as string;
-						const messageName = this.getNodeParameter('messageName', i) as string;
+						const name = this.getNodeParameter('name', i) as string;
 
 						responseData = await googleApiRequest.call(
 							this,
 							'GET',
-							`/v1/spaces/${spaceName}/messages/${messageName}`,
+							`/v1/${name}`,
 						);
 
 					} else if (operation === 'update') {
@@ -364,8 +361,7 @@ export class GoogleChat implements INodeType {
 
 						// https://developers.google.com/chat/reference/rest/v1/spaces.messages/update
 
-						const spaceName = this.getNodeParameter('spaceName', i) as string;
-						const messageName = this.getNodeParameter('messageName', i) as string;
+						const name = this.getNodeParameter('name', i) as string;
 
 						const updateMaskOptions = this.getNodeParameter('updateMask', i) as string[];
 						if (updateMaskOptions.length !== 0) {
@@ -412,7 +408,7 @@ export class GoogleChat implements INodeType {
 						responseData = await googleApiRequest.call(
 							this,
 							'PUT',
-							`/v1/spaces/${spaceName}/messages/${messageName}`,
+							`/v1/${name}`,
 							body,
 							qs,
 						);
@@ -427,14 +423,12 @@ export class GoogleChat implements INodeType {
 
 						// https://developers.google.com/chat/reference/rest/v1/spaces.messages.attachments/get
 
-						const spaceName = this.getNodeParameter('spaceName', i) as string;
-						const messageName = this.getNodeParameter('messageName', i) as string;
-						const attachmentName = this.getNodeParameter('attachmentName', i) as string;
+						const name = this.getNodeParameter('name', i) as string;
 
 						responseData = await googleApiRequest.call(
 							this,
-							'POST',
-							`/v1/spaces/${spaceName}/messages/${messageName}/attachments/${attachmentName}`,
+							'GET',
+							`/v1/${name}`,
 						);
 					}
 				}
