@@ -139,7 +139,7 @@ export class GoogleChat implements INodeType {
 						responseData = await googleApiRequest.call(
 							this,
 							'GET',
-							`/v1/${spaceName}`,
+							`/v1/spaces/${spaceName}`,
 						);
 
 					} else if (operation === 'getAll') {
@@ -173,6 +173,7 @@ export class GoogleChat implements INodeType {
 								undefined,
 								qs,
 							);
+							// responseData = responseData.spaces;
 						}
 
 					}
@@ -229,6 +230,7 @@ export class GoogleChat implements INodeType {
 								undefined,
 								qs,
 							);
+							// responseData = responseData.memberships;
 						}
 
 					}
@@ -243,7 +245,8 @@ export class GoogleChat implements INodeType {
 
 						const spaceName = this.getNodeParameter('spaceName', i) as string;
 
-						qs.threadKey = this.getNodeParameter('threadKey', i) as string;
+						const thread = this.getNodeParameter('threadKey', i) as string;
+						qs.threadKey = `spaces/${spaceName}/threads/${thread}`;
 
 						let message: IMessage = {};
 						const jsonParameterMessage = this.getNodeParameter('jsonParameterMessage', i) as string;
@@ -276,7 +279,7 @@ export class GoogleChat implements INodeType {
 						responseData = await googleApiRequest.call(
 							this,
 							'POST',
-							`/v1/spaces/${spaceName}`,
+							`/v1/spaces/${spaceName}/messages`,
 							body,
 							qs,
 						);
@@ -370,7 +373,7 @@ export class GoogleChat implements INodeType {
 
 						responseData = await googleApiRequest.call(
 							this,
-							'POST',
+							'PUT',
 							`/v1/spaces/${spaceName}/messages/${messageName}`,
 							body,
 							qs,

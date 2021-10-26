@@ -22,7 +22,12 @@ import * as jwt from 'jsonwebtoken';
 
 export async function googleApiRequest(this: IExecuteFunctions | IExecuteSingleFunctions | ILoadOptionsFunctions, method: string, resource: string, body: any = {}, qs: IDataObject = {}, uri?: string, headers: IDataObject = {}): Promise<any> { // tslint:disable-line:no-any
 
-	// const authenticationMethod = this.getNodeParameter('authentication', 0, 'serviceAccount') as string;
+	const credentials = await this.getCredentials('googleApi');
+
+	if (credentials === undefined) {
+		throw new NodeOperationError(this.getNode(), 'No credentials got returned!');
+	}
+
 	const options: OptionsWithUri = {
 		headers: {
 			'Content-Type': 'application/json',
@@ -33,30 +38,21 @@ export async function googleApiRequest(this: IExecuteFunctions | IExecuteSingleF
 		uri: uri || `https://chat.googleapis.com${resource}`,
 		json: true,
 	};
+
+	if (Object.keys(headers).length !== 0) {
+		options.headers = Object.assign({}, options.headers, headers);
+	}
+	if (Object.keys(body).length === 0) {
+		delete options.body;
+	}
+
 	try {
-		if (Object.keys(headers).length !== 0) {
-			options.headers = Object.assign({}, options.headers, headers);
-		}
-		if (Object.keys(body).length === 0) {
-			delete options.body;
-		}
+		const { access_token } = await getAccessToken.call(this, credentials as ICredentialDataDecryptedObject);
 
-		// if (authenticationMethod === 'serviceAccount') {
-			const credentials = await this.getCredentials('googleApi');
+		options.headers!.Authorization = `Bearer ${access_token}`;
+		//@ts-ignore
+		return await this.helpers.request(options);
 
-			if (credentials === undefined) {
-				throw new NodeOperationError(this.getNode(), 'No credentials got returned!');
-			}
-
-			const { access_token } = await getAccessToken.call(this, credentials as ICredentialDataDecryptedObject);
-
-			options.headers!.Authorization = `Bearer ${access_token}`;
-			//@ts-ignore
-			return await this.helpers.request(options);
-		// } else {
-		// 	//@ts-ignore
-		// 	return await this.helpers.requestOAuth2.call(this, 'googleChatsOAuth2Api', options);
-		// }
 	} catch (error) {
 		if (error.code === 'ERR_OSSL_PEM_NO_START_LINE') {
 			error.statusCode = '401';
