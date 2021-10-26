@@ -62,7 +62,7 @@ export const memberFields = [
 		displayOptions: {
 			show: {
 				resource: [
-					'members',
+					'member',
 				],
 				operation: [
 					'get',
