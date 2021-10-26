@@ -99,7 +99,6 @@ export const messageFields = [
 		default: '',
 		description: ' A unique request ID for this message. If a message has already been created in the space with this request ID, the subsequent request will return the existing message and no new message will be created.',
 	},
-
 	{
 		displayName: 'Json Parameter Message',
 		name: 'jsonParameterMessage',

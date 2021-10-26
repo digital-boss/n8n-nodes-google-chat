@@ -183,8 +183,15 @@ export class GoogleChat implements INodeType {
 					// https://developers.google.com/chat/how-tos/webhooks
 
 					const uri = this.getNodeParameter('webhookUrl', i) as string;
+
 					const threadKey = this.getNodeParameter('threadKey', i) as string;
-					qs.threadKey = threadKey;
+					if (threadKey && threadKey !== '') {
+						qs.threadKey = threadKey;
+					}
+					const requestId = this.getNodeParameter('requestId', i) as string;
+					if (requestId && requestId !== '') {
+						qs.requestId = requestId;
+					}
 
 					let message: IMessage = {};
 					const jsonParameterMessage = this.getNodeParameter('jsonParameterMessage', i) as boolean;
