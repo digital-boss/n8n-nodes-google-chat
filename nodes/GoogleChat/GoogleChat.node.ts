@@ -172,57 +172,7 @@ export class GoogleChat implements INodeType {
 							);
 							// responseData = responseData.spaces;
 						}
-
 					}
-				}	if (operation === 'webhook') {
-
-					// ----------------------------------------
-					//             space: webhook
-					// ----------------------------------------
-
-					// https://developers.google.com/chat/how-tos/webhooks
-
-					const uri = this.getNodeParameter('webhookUrl', i) as string;
-
-					const threadKey = this.getNodeParameter('threadKey', i) as string;
-					if (threadKey && threadKey !== '') {
-						qs.threadKey = threadKey;
-					}
-					const requestId = this.getNodeParameter('requestId', i) as string;
-					if (requestId && requestId !== '') {
-						qs.requestId = requestId;
-					}
-
-					let message: IMessage = {};
-					const jsonParameterMessage = this.getNodeParameter('jsonParameterMessage', i) as boolean;
-					if (jsonParameterMessage) {
-						const jsonStr = this.getNodeParameter('messageJson', i) as string;
-						if (validateJSON(jsonStr) !== undefined) {
-							message = JSON.parse(jsonStr) as IMessage;
-						} else {
-							throw new NodeOperationError(this.getNode(), 'Message (JSON) must be a valid json');
-						}
-					} else {
-						const messageUi = this.getNodeParameter('messageUi', i) as IMessageUi;
-						if (messageUi.text && messageUi.text !== '') {
-							message.text = messageUi.text;
-						} else {
-							throw new NodeOperationError(this.getNode(), 'Message Text must be provided.');
-						}
-					}
-					const body: IDataObject = {};
-					Object.assign(body, message);
-
-					responseData = await googleApiRequest.call(
-						this,
-						'POST',
-						`/v1/spaces`,
-						body,
-						qs,
-						uri,
-						true,
-					);
-
 				} else if (resource === 'member') {
 					if (operation === 'get') {
 
@@ -424,6 +374,54 @@ export class GoogleChat implements INodeType {
 							`/v1/${name}`,
 							body,
 							qs,
+						);
+					} else if (operation === 'webhook') {
+
+						// ----------------------------------------
+						//             message: webhook
+						// ----------------------------------------
+
+						// https://developers.google.com/chat/how-tos/webhooks
+
+						const uri = this.getNodeParameter('webhookUrl', i) as string;
+
+						const threadKey = this.getNodeParameter('threadKey', i) as string;
+						if (threadKey && threadKey !== '') {
+							qs.threadKey = threadKey;
+						}
+						const requestId = this.getNodeParameter('requestId', i) as string;
+						if (requestId && requestId !== '') {
+							qs.requestId = requestId;
+						}
+
+						let message: IMessage = {};
+						const jsonParameterMessage = this.getNodeParameter('jsonParameterMessage', i) as boolean;
+						if (jsonParameterMessage) {
+							const jsonStr = this.getNodeParameter('messageJson', i) as string;
+							if (validateJSON(jsonStr) !== undefined) {
+								message = JSON.parse(jsonStr) as IMessage;
+							} else {
+								throw new NodeOperationError(this.getNode(), 'Message (JSON) must be a valid json');
+							}
+						} else {
+							const messageUi = this.getNodeParameter('messageUi', i) as IMessageUi;
+							if (messageUi.text && messageUi.text !== '') {
+								message.text = messageUi.text;
+							} else {
+								throw new NodeOperationError(this.getNode(), 'Message Text must be provided.');
+							}
+						}
+						const body: IDataObject = {};
+						Object.assign(body, message);
+
+						responseData = await googleApiRequest.call(
+							this,
+							'POST',
+							'',
+							body,
+							qs,
+							uri,
+							true,
 						);
 					}
 
