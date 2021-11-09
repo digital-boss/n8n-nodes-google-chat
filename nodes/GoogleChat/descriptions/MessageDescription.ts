@@ -237,7 +237,7 @@ export const messageFields = [
 			},
 		},
 		default: '',
-		description: 'Message input as JSON.',
+		description: 'Message input as JSON Object or JSON String.',
 	},
 
 	/* -------------------------------------------------------------------------- */
@@ -483,7 +483,7 @@ export const messageFields = [
 			},
 		},
 		default: '',
-		description: 'Update options input as JSON.',
+		description: 'Update options input as JSON Object or JSON String.',
 	},
 
 
@@ -647,7 +647,7 @@ export const messageFields = [
 			},
 		},
 		default: '',
-		description: 'Message input as JSON.',
+		description: 'Message input as JSON Object or JSON String.',
 	},
 
 ] as INodeProperties[];

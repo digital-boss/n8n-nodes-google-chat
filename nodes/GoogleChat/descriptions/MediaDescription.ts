@@ -67,5 +67,4 @@ export const  mediaFields = [
 		description: 'Name of the binary property to which to write the data of the read file.',
 	},
 
-
 ] as INodeProperties[];
