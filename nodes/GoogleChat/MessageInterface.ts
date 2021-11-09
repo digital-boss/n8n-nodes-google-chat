@@ -1,21 +1,4 @@
 import { IDataObject } from 'n8n-workflow';
-//
-// export interface IMessage {
-// 	name?: string;
-// 	sender?: IUser;
-// 	createTime?: string;
-// 	text?: string;
-// 	cards?: ICard[];
-// 	previewText?: string;
-// 	annotations?: IAnnotation[];
-// 	thread?: IThread[];
-// 	space?: ISpace;
-// 	fallbackText?: string;
-// 	actionResponse?: IActionResponse;
-// 	argumentText?: string;
-// 	slashCommand?: ISlashCommand;
-// 	attachment?: IAttachment[];
-// }
 
 export interface IMessage {
 	name?: string;
@@ -54,47 +37,65 @@ enum Type {
 	'BOT',
 }
 
-export interface ICard {
-	header?: ICardHeader;
-	sections?: ISection[];
-	cardActions?: ICardAction[];
-	name?: string;
-}
-
-// todo: define other interfaces
-export interface ICardHeader {
-	// actionLabel?: string,
-	// onClick?: IOnClick,
-}
-
-export interface ISection {
-
-}
-
-export interface ICardAction {
-
-}
-
-export interface IAnnotation {
-
-}
-
-export interface IThread {
-
-}
-
-export interface ISpace {
-
-}
-
-export interface IActionResponse {
-
-}
-
-export interface ISlashCommand {
-
-}
-
-export interface IAttachment {
-
-}
+// // todo: define other interfaces
+//
+// export interface IMessage {
+// 	name?: string;
+// 	sender?: IUser;
+// 	createTime?: string;
+// 	text?: string;
+// 	cards?: ICard[];
+// 	previewText?: string;
+// 	annotations?: IAnnotation[];
+// 	thread?: IThread[];
+// 	space?: ISpace;
+// 	fallbackText?: string;
+// 	actionResponse?: IActionResponse;
+// 	argumentText?: string;
+// 	slashCommand?: ISlashCommand;
+// 	attachment?: IAttachment[];
+// }
+//
+// export interface ICard {
+// 	header?: ICardHeader;
+// 	sections?: ISection[];
+// 	cardActions?: ICardAction[];
+// 	name?: string;
+// }
+//
+// export interface ICardHeader {
+// 	// actionLabel?: string,
+// 	// onClick?: IOnClick,
+// }
+//
+// export interface ISection {
+//
+// }
+//
+// export interface ICardAction {
+//
+// }
+//
+// export interface IAnnotation {
+//
+// }
+//
+// export interface IThread {
+//
+// }
+//
+// export interface ISpace {
+//
+// }
+//
+// export interface IActionResponse {
+//
+// }
+//
+// export interface ISlashCommand {
+//
+// }
+//
+// export interface IAttachment {
+//
+// }

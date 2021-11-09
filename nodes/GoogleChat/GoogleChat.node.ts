@@ -118,11 +118,49 @@ export class GoogleChat implements INodeType {
 
 						const resourceName = this.getNodeParameter('resourceName', i) as string;
 
+						const endpoint = `/v1/media/${resourceName}?alt=media`;
+
+						// Return the data as a buffer
+						const encoding = null;
+
 						responseData = await googleApiRequest.call(
 							this,
 							'GET',
-							`/v1/media/${resourceName}?alt=media`,
+							endpoint,
+							undefined,
+							undefined,
+							undefined,
+							undefined,
+							encoding,
 						);
+
+						const newItem: INodeExecutionData = {
+							json: items[i].json,
+							binary: {},
+						};
+
+						if (items[i].binary !== undefined) {
+							// Create a shallow copy of the binary data so that the old
+							// data references which do not get changed still stay behind
+							// but the incoming data does not get changed.
+							Object.assign(newItem.binary, items[i].binary);
+						}
+
+						items[i] = newItem;
+
+						const binaryPropertyName = this.getNodeParameter('binaryPropertyName', i) as string;
+
+						items[i].binary![binaryPropertyName] = await this.helpers.prepareBinaryData(responseData, endpoint);
+
+
+
+
+
+
+
+
+
+
 					}
 
 				} else if (resource === 'space') {
@@ -448,15 +486,26 @@ export class GoogleChat implements INodeType {
 				} else if (responseData !== undefined) {
 					returnData.push(responseData as IDataObject);
 				}
-			} catch (error) {
+			}  catch (error) {
 				if (this.continueOnFail()) {
 					// Return the actual reason as error
-					returnData.push({ error: error.message });
+					if (operation === 'download') {
+						items[i].json = { error: error.message };
+					} else {
+						returnData.push({ error: error.message });
+					}
 					continue;
 				}
 				throw error;
 			}
 		}
-		return [this.helpers.returnJsonArray(returnData)];
+
+		if (operation === 'download') {
+			// For file downloads the files get attached to the existing items
+			return this.prepareOutputData(items);
+		} else {
+			// For all other ones does the output get replaced
+			return [this.helpers.returnJsonArray(returnData)];
+		}
 	}
 }

@@ -20,7 +20,7 @@ import * as moment from 'moment-timezone';
 
 import * as jwt from 'jsonwebtoken';
 
-export async function googleApiRequest(this: IExecuteFunctions | IExecuteSingleFunctions | ILoadOptionsFunctions, method: string, resource: string, body: any = {}, qs: IDataObject = {}, uri?: string, noCredentials = false): Promise<any> { // tslint:disable-line:no-any
+export async function googleApiRequest(this: IExecuteFunctions | IExecuteSingleFunctions | ILoadOptionsFunctions, method: string, resource: string, body: any = {}, qs: IDataObject = {}, uri?: string, noCredentials = false, encoding?: null | undefined): Promise<any> { // tslint:disable-line:no-any
 
 	const options: OptionsWithUri = {
 		headers: {
@@ -35,6 +35,10 @@ export async function googleApiRequest(this: IExecuteFunctions | IExecuteSingleF
 
 	if (Object.keys(body).length === 0) {
 		delete options.body;
+	}
+
+	if (encoding === null) {
+		options.encoding = null;
 	}
 
 	try {
