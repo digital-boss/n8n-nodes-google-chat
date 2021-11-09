@@ -48,4 +48,24 @@ export const  mediaFields = [
 		default: '',
 		description: 'Name of the media that is being downloaded.',
 	},
+	{
+		displayName: 'Binary Property',
+		name: 'binaryPropertyName',
+		type: 'string',
+		default: 'data',
+		required: true,
+		displayOptions: {
+			show: {
+				resource: [
+					'media',
+				],
+				operation: [
+					'download',
+				],
+			},
+		},
+		description: 'Name of the binary property to which to write the data of the read file.',
+	},
+
+
 ] as INodeProperties[];

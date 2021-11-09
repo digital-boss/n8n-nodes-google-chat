@@ -152,15 +152,6 @@ export class GoogleChat implements INodeType {
 
 						items[i].binary![binaryPropertyName] = await this.helpers.prepareBinaryData(responseData, endpoint);
 
-
-
-
-
-
-
-
-
-
 					}
 
 				} else if (resource === 'space') {
