@@ -18,6 +18,8 @@ import {
 import {
 	attachmentFields,
 	attachmentOperations,
+	incomingWebhookFields,
+	incomingWebhookOperations,
 	mediaFields,
 	mediaOperations,
 	memberFields,
@@ -81,6 +83,10 @@ export class GoogleChat implements INodeType {
 						name: 'Attachment',
 						value: 'attachment',
 					},
+					{
+						name: 'Incoming Webhook',
+						value: 'incomingWebhook',
+					},
 				],
 				default: 'message',
 				description: 'The resource to operate on.',
@@ -95,6 +101,8 @@ export class GoogleChat implements INodeType {
 			...messageFields,
 			...attachmentOperations,
 			...attachmentFields,
+			...incomingWebhookOperations,
+			...incomingWebhookFields,
 		],
 	};
 
@@ -188,9 +196,8 @@ export class GoogleChat implements INodeType {
 								`/v1/spaces`,
 							);
 						} else {
-							const additionalFields = this.getNodeParameter('additionalFields', i) as IDataObject;
-							qs.pageSize = additionalFields.pageSize as number >>> 0; // convert to an unsigned 32-bit integer
-							qs.pageToken = additionalFields.pageToken;
+							const limit = this.getNodeParameter('limit', i) as number;
+							qs.pageSize = limit >>> 0; // convert to an unsigned 32-bit integer
 
 							responseData = await googleApiRequest.call(
 								this,
@@ -199,7 +206,7 @@ export class GoogleChat implements INodeType {
 								undefined,
 								qs,
 							);
-							// responseData = responseData.spaces;
+							responseData = responseData.spaces;
 						}
 					}
 				} else if (resource === 'member') {
@@ -227,7 +234,7 @@ export class GoogleChat implements INodeType {
 
 						// https://developers.google.com/chat/reference/rest/v1/spaces.members/list
 
-						const parentName = this.getNodeParameter('parentName', i) as string;
+						const spaceName = this.getNodeParameter('spaceName', i) as string;
 
 						const returnAll = this.getNodeParameter('returnAll', 0) as IDataObject;
 						if (returnAll) {
@@ -235,30 +242,28 @@ export class GoogleChat implements INodeType {
 								this,
 								'memberships',
 								'GET',
-								`/v1/${parentName}/members`,
+								`/v1/${spaceName}/members`,
 								undefined,
 								qs,
 							);
 
 						} else {
-							// get additional fields input for pageSize and pageToken
-							const additionalFields = this.getNodeParameter('additionalFields', i) as IDataObject;
-							qs.pageSize = additionalFields.pageSize as number >>> 0; // convert to an unsigned 32-bit integer
-							qs.pageToken = additionalFields.pageToken;
+							const limit = this.getNodeParameter('limit', i) as number;
+							qs.pageSize = limit >>> 0; // convert to an unsigned 32-bit integer
 
 							responseData = await googleApiRequest.call(
 								this,
 								'GET',
-								`/v1/${parentName}/members`,
+								`/v1/${spaceName}/members`,
 								undefined,
 								qs,
 							);
-							// responseData = responseData.memberships;
+							responseData = responseData.memberships;
 						}
 
 					}
 				} else if (resource === 'message') {
-					if (operation === 'create'){
+					if (operation === 'create') {
 
 						// ----------------------------------------
 						//             message: create
@@ -266,15 +271,15 @@ export class GoogleChat implements INodeType {
 
 						// https://developers.google.com/chat/reference/rest/v1/spaces.messages/create
 
-						const parentName = this.getNodeParameter('parentName', i) as string;
+						const spaceName = this.getNodeParameter('spaceName', i) as string;
 
-						const threadKey = this.getNodeParameter('threadKey', i) as string;
-						if (threadKey && threadKey !== '') {
-							qs.threadKey = threadKey;
+						// get query parameters for threadKey and requestId
+						const queryParameters = this.getNodeParameter('queryParameters', i) as IDataObject;
+						if (queryParameters.threadKey) {
+							qs.threadKey = queryParameters.threadKey;
 						}
-						const requestId = this.getNodeParameter('requestId', i) as string;
-						if (requestId && requestId !== '') {
-							qs.requestId = requestId;
+						if (queryParameters.requestId) {
+							qs.requestId = queryParameters.requestId;
 						}
 
 						let message: IMessage = {};
@@ -301,9 +306,9 @@ export class GoogleChat implements INodeType {
 							} else {
 								throw new NodeOperationError(this.getNode(), 'Message Text must be provided.');
 							}
-							// 	// todo: get cards from the ui
+							// 	// TODO: get cards from the UI
 							// if (messageUi?.cards?.metadataValues && messageUi?.cards?.metadataValues.length !== 0) {
-							// 	const cards = messageUi.cards.metadataValues as IDataObject[]; // todo: map cards to messageUi.cards.metadataValues
+							// 	const cards = messageUi.cards.metadataValues as IDataObject[]; // TODO: map cards to messageUi.cards.metadataValues
 							// 	message.cards = cards;
 							// }
 						}
@@ -314,7 +319,7 @@ export class GoogleChat implements INodeType {
 						responseData = await googleApiRequest.call(
 							this,
 							'POST',
-							`/v1/${parentName}/messages`,
+							`/v1/${spaceName}/messages`,
 							body,
 							qs,
 						);
@@ -361,55 +366,47 @@ export class GoogleChat implements INodeType {
 
 						const name = this.getNodeParameter('name', i) as string;
 
-						const updateMaskOptions = this.getNodeParameter('updateMask', i) as string[];
-						if (updateMaskOptions.length !== 0) {
-							let updateMask = '';
-							for (const option of updateMaskOptions) {
-								updateMask += option + ',';
-							}
-							updateMask = updateMask.slice(0, -1); // remove trailing comma
-							qs.updateMask = updateMask;
-						} else {
-							throw new NodeOperationError(this.getNode(), 'Update Mask must not be empty.');
-						}
+						let message: IMessage = {};
+						const jsonParameterMessage = this.getNodeParameter('jsonParameterMessage', i) as boolean;
+						if (jsonParameterMessage) {
+							const messageJson = this.getNodeParameter('messageJson', i);
 
-						let updateOptions: IMessage = {};
-						const jsonParameterUpdateOptions = this.getNodeParameter('jsonParameterUpdateOptions', i) as boolean;
-						if (jsonParameterUpdateOptions) {
-							const updateOptionsJson = this.getNodeParameter('updateOptionsJson', i);
-
-							if (updateOptionsJson instanceof Object) {
+							if (messageJson instanceof Object) {
 								// if it is an object
-								updateOptions = updateOptionsJson as IMessage;
+								message = messageJson as IMessage;
 							} else {
 								// if it is a string
-								if (validateJSON(updateOptionsJson as string) !== undefined) {
-									updateOptions = JSON.parse(updateOptionsJson as string) as IMessage;
+								if (validateJSON(messageJson as string) !== undefined) {
+									message = JSON.parse(messageJson as string) as IMessage;
 								} else {
 									throw new NodeOperationError(this.getNode(), 'Message (JSON) must be a valid json');
 								}
 							}
 
 						} else {
-							if (updateMaskOptions.includes('text')) {
-								const text = this.getNodeParameter('textUi', i) as string;
-								if (text !== '') {
-									updateOptions.text = text;
-								} else {
-									throw new NodeOperationError(this.getNode(), 'Text input must be provided.');
-								}
+							const messageUi = this.getNodeParameter('messageUi', i) as IDataObject;
+							if (messageUi.text) {
+								message.text = messageUi.text as string;
 							}
-							// if (updateMaskOptions.includes('cards')) {
-							// 	// todo: get cards from the ui
-							// 	const cardsUi = this.getNodeParameter('cardsUi.metadataValues', i) as IDataObject[];
-							// 	if (cardsUi.length !== 0) {
-							// 		updateOptions.cards = cardsUi as IDataObject[]; // todo: map cardsUi to cards[]
-							// 	}
+							// // TODO: get cards from the UI
+							// if (messageUi.cards) {
+							// 	message.cards = messageUi.cards as IDataObject[];
 							// }
 						}
 
 						const body: IDataObject = {};
-						Object.assign(body, updateOptions);
+						Object.assign(body, message);
+
+						// get update mask
+						let updateMask = '';
+						if (message.text) {
+							updateMask += 'text,';
+						}
+						if (message.cards) {
+							updateMask += 'cards,';
+						}
+						updateMask = updateMask.slice(0, -1); // remove trailing comma
+						qs.updateMask = updateMask;
 
 						responseData = await googleApiRequest.call(
 							this,
@@ -418,23 +415,40 @@ export class GoogleChat implements INodeType {
 							body,
 							qs,
 						);
-					} else if (operation === 'webhook') {
+					}
+
+				} else if (resource === 'attachment') {
+
+					if (operation === 'get') {
+						// ----------------------------------------
+						//             attachment: get
+						// ----------------------------------------
+
+						// https://developers.google.com/chat/reference/rest/v1/spaces.messages.attachments/get
+
+						const name = this.getNodeParameter('name', i) as string;
+
+						responseData = await googleApiRequest.call(
+							this,
+							'GET',
+							`/v1/${name}`,
+						);
+					}
+				} else if (resource === 'incomingWebhook') {
+					if (operation === 'create') {
 
 						// ----------------------------------------
-						//             message: webhook
+						//             incomingWebhook: create
 						// ----------------------------------------
 
 						// https://developers.google.com/chat/how-tos/webhooks
 
-						const uri = this.getNodeParameter('webhookUrl', i) as string;
+						const uri = this.getNodeParameter('incomingWebhookUrl', i) as string;
 
-						const threadKey = this.getNodeParameter('threadKey', i) as string;
-						if (threadKey && threadKey !== '') {
-							qs.threadKey = threadKey;
-						}
-						const requestId = this.getNodeParameter('requestId', i) as string;
-						if (requestId && requestId !== '') {
-							qs.requestId = requestId;
+						// get query parameters for threadKey
+						const queryParameters = this.getNodeParameter('queryParameters', i) as IDataObject;
+						if (queryParameters.threadKey) {
+							qs.threadKey = queryParameters.threadKey;
 						}
 
 						let message: IMessage = {};
@@ -462,6 +476,7 @@ export class GoogleChat implements INodeType {
 								throw new NodeOperationError(this.getNode(), 'Message Text must be provided.');
 							}
 						}
+
 						const body: IDataObject = {};
 						Object.assign(body, message);
 
@@ -476,23 +491,6 @@ export class GoogleChat implements INodeType {
 						);
 					}
 
-				} else if (resource === 'attachment') {
-
-					if (operation === 'get') {
-						// ----------------------------------------
-						//             attachment: get
-						// ----------------------------------------
-
-						// https://developers.google.com/chat/reference/rest/v1/spaces.messages.attachments/get
-
-						const name = this.getNodeParameter('name', i) as string;
-
-						responseData = await googleApiRequest.call(
-							this,
-							'GET',
-							`/v1/${name}`,
-						);
-					}
 				}
 				if (Array.isArray(responseData)) {
 					returnData.push.apply(returnData, responseData as IDataObject[]);
