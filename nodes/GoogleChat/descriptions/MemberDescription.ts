@@ -41,8 +41,8 @@ export const memberFields = [
 	/*                                 member:get                              */
 	/* -------------------------------------------------------------------------- */
 	{
-		displayName: 'Name',
-		name: 'name',
+		displayName: 'Member Name',
+		name: 'memberName',
 		type: 'string',
 		required: true,
 		displayOptions: {
