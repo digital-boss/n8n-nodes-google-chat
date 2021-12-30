@@ -49,8 +49,11 @@ export const messageFields = [
 	{
 		displayName: 'Space Name',
 		name: 'spaceName',
-		type: 'string',
+		type: 'options',
 		required: true,
+		typeOptions: {
+			loadOptionsMethod: 'getSpaces',
+		},
 		displayOptions: {
 			show: {
 				resource: [

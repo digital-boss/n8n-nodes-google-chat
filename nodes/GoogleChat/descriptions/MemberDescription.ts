@@ -65,8 +65,11 @@ export const memberFields = [
 	{
 		displayName: 'Space Name',
 		name: 'spaceName',
-		type: 'string',
+		type: 'options',
 		required: true,
+		typeOptions: {
+			loadOptionsMethod: 'getSpaces',
+		},
 		displayOptions: {
 			show: {
 				resource: [
@@ -77,7 +80,7 @@ export const memberFields = [
 				],
 			},
 		},
-		default: '',
+		default: [],
 		description: 'The name of the space for which to retrieve members, in the form "spaces/*".',
 	},
 
