@@ -6,6 +6,7 @@ export const attachmentOperations = [
 	{
 		displayName: 'Operation',
 		name: 'operation',
+		noDataExpression: true,
 		type: 'options',
 		displayOptions: {
 			show: {

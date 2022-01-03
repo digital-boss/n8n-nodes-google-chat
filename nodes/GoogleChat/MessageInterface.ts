@@ -39,7 +39,7 @@ enum Type {
 
 // // TODO: define other interfaces
 //
-// export interface IMessage {s
+// export interface IMessage {
 // 	name?: string;
 // 	sender?: IUser;
 // 	createTime?: string;
