@@ -2,7 +2,7 @@
     "name": "@digital-boss/n8n-nodes-google-chat",
     "version": "0.2.4",
     "description": "A node consuming the Google Chat API.",
-    "license": "SEE LICENSE IN LICENSE.md",
+    "license": "MIT",
     "homepage": "https://n8n.io",
     "author": {
         "name": "Valentina Lilova",
